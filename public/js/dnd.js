@@ -1,33 +1,22 @@
-var music;
-
+// Drag and drop audio files onto the page — adds to music playlist
 (function () {
 
 var root = document.documentElement;
 
 root.ondragover = function () { this.className = 'hover'; return false; };
-root.ondragend = function () { this.className = ''; return false; };
-root.ondrop = function (e) {
+root.ondragend  = function () { this.className = ''; return false; };
+root.ondrop     = function (e) {
   this.className = '';
   e.preventDefault();
 
-  var file = e.dataTransfer.files[0],
-      reader = new FileReader();
+  var files = e.dataTransfer.files;
+  if (files && files.length > 0) {
+    // Switch to Music source if not already
+    document.querySelector('#sourceMusic').checked = true;
+    $('input[name="sourceType"]').trigger('change');
 
-  reader.onload = function (event) {
-    audio.decodeAudioData(event.target.result, function(buffer) {
-      music = audio.createBufferSource();
-      music.buffer = buffer;
-
-      if (notch) { 
-        notch.input = music;
-      }
-
-      music.start(0);
-    }, function () {
-      console.error('failed to decodeAudioData');
-    });
-  };
-  reader.readAsArrayBuffer(file);
+    musicPlayer.addFiles(files);
+  }
 
   return false;
 };

@@ -54,12 +54,23 @@
 
         <!-- Notch tab -->
         <div class="tab-pane fade" id="notch">
+
+          <!-- Source selection: Noise or Music -->
+          <div class="mb-3">
+            <div class="btn-group" role="group" id="sourceGroup">
+              <input type="radio" class="btn-check" name="sourceType" id="sourceNoise" value="noise" checked>
+              <label class="btn btn-outline-secondary" for="sourceNoise">Noise</label>
+              <input type="radio" class="btn-check" name="sourceType" id="sourceMusic" value="music">
+              <label class="btn btn-outline-secondary" for="sourceMusic">Music</label>
+            </div>
+          </div>
+
           <!-- Noise controls -->
-          <div class="d-flex align-items-end gap-3 mb-3">
+          <div id="noiseControls" class="d-flex align-items-end gap-3 mb-3">
             <div>
               <label for="noiseType" class="form-label">Noise Type</label>
               <select id="noiseType" class="form-select w-auto">
-                <option value="white"  selected>White</option>
+                <option value="white" selected>White</option>
                 <option value="pink">Pink</option>
                 <option value="brown">Brown</option>
                 <option value="blue">Blue</option>
@@ -72,9 +83,46 @@
               </button>
             </div>
           </div>
+
+          <!-- Music controls -->
+          <div id="musicControls" class="mb-3" style="display:none">
+            <div class="d-flex align-items-end gap-2 mb-2">
+              <div>
+                <label class="form-label">Add Files</label><br>
+                <label class="btn btn-sm btn-outline-primary mb-0">
+                  Choose Files
+                  <input type="file" id="musicFiles" accept="audio/*" multiple style="display:none">
+                </label>
+              </div>
+              <div>
+                <label class="form-label">Add Folder</label><br>
+                <label class="btn btn-sm btn-outline-primary mb-0">
+                  Choose Folder
+                  <input type="file" id="musicFolder" accept="audio/*" webkitdirectory multiple style="display:none">
+                </label>
+              </div>
+              <button id="clearPlaylist" type="button" class="btn btn-sm btn-outline-danger">Clear</button>
+            </div>
+            <!-- Playback controls -->
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <button id="musicPlayBtn" type="button" class="btn btn-success" disabled>
+                <i class="bi bi-play-fill"></i>
+              </button>
+              <button id="musicPrevBtn" type="button" class="btn btn-secondary" disabled>
+                <i class="bi bi-skip-start-fill"></i>
+              </button>
+              <button id="musicNextBtn" type="button" class="btn btn-secondary" disabled>
+                <i class="bi bi-skip-end-fill"></i>
+              </button>
+              <span id="musicNowPlaying" class="text-muted small ms-2">No file loaded</span>
+            </div>
+            <!-- Playlist -->
+            <ul id="playlist" class="list-group" style="max-height:200px; overflow-y:auto"></ul>
+          </div>
+
           <!-- EQ -->
           <div class="d-flex align-items-center gap-3 mb-3">
-            <h5 class="mb-0">10-Band Equalizer</h5>
+            <h5 class="mb-0">Notch Frequency Chooser</h5>
             <div class="form-check form-switch mb-0">
               <input class="form-check-input" type="checkbox" id="eqManual">
               <label class="form-check-label" for="eqManual">Manual</label>
@@ -83,9 +131,12 @@
           <div id="eq-container" class="d-flex gap-2 align-items-end mb-3">
             <!-- bands injected by equalizer.js -->
           </div>
-          <div class="text-muted small">
-            Drag sliders to adjust gain (dB) per frequency band. Negative values cut.
+          <div class="text-muted small mb-3">
+            Drag sliders down to cut frequencies around your tinnitus. Use Manual to customise.
           </div>
+          <!-- Notch tab volume -->
+          <label class="form-label">Volume: <span id="notchGainDisplay">50</span>%</label>
+          <input id="notchGainSlider" type="range" min="0" max="100" value="50" class="form-range">
         </div>
 
       </div>
@@ -101,6 +152,7 @@
     <script src="js/generate.js"></script>
     <script src="js/render.js"></script>
     <script src="js/equalizer.js"></script>
+    <script src="js/music.js"></script>
     <script src="js/app.js"></script>
     <script src="js/find.js"></script>
   </body>

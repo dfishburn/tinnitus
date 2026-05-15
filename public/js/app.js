@@ -1,4 +1,4 @@
-/*global find:true, $:true, generateNoise:true, equalizer:true*/
+/*global find:true, $:true, generateNoise:true, equalizer:true, musicPlayer:true*/
 "use strict";
 
 var audio;
@@ -124,8 +124,9 @@ function init() {
     var show = e.target.hash.substr(1);
 
     if (show === 'find') {
-      // Leaving Notch tab — stop noise
+      // Leaving Notch tab — stop all notch sources
       stopNotchNoise();
+      musicPlayer.stop();
       if (audio) { audio.suspend(); }
       findPlaying = false;
       $('#startBtn').html('<i class="bi bi-play-fill"></i>');
@@ -150,6 +151,75 @@ function init() {
       if (!equalizer.isManual()) {
         equalizer.setNotch(freqValue);
       }
+    }
+  });
+
+  // Source type toggle (Noise / Music)
+  $('input[name="sourceType"]').on('change', function () {
+    var isMusic = this.value === 'music';
+    $('#noiseControls').toggle(!isMusic);
+    $('#musicControls').toggle(isMusic);
+    // Stop whichever source was playing
+    stopNotchNoise();
+    musicPlayer.stop();
+    if (audio) { audio.suspend(); }
+  });
+
+  // Music file pickers
+  $('#musicFiles').on('change', function () {
+    if (!initAudio()) { return; }
+    if (!equalizer.filtersBuilt()) {
+      equalizer.buildFilters();
+    }
+    if (!find.gainNode) {
+      find.initGainNode();
+    }
+    musicPlayer.addFiles(this.files);
+    this.value = '';
+  });
+
+  $('#musicFolder').on('change', function () {
+    if (!initAudio()) { return; }
+    if (!equalizer.filtersBuilt()) {
+      equalizer.buildFilters();
+    }
+    if (!find.gainNode) {
+      find.initGainNode();
+    }
+    musicPlayer.addFiles(this.files);
+    this.value = '';
+  });
+
+  $('#clearPlaylist').on('click', function () {
+    musicPlayer.clear();
+  });
+
+  // Music playback controls
+  $('#musicPlayBtn').on('click', function () {
+    if (!initAudio()) { return; }
+    if (!equalizer.filtersBuilt()) {
+      equalizer.buildFilters();
+    }
+    if (!find.gainNode) {
+      find.initGainNode();
+    }
+    if (audio.state === 'suspended') { audio.resume(); }
+    musicPlayer.play();
+  });
+
+  $('#musicPrevBtn').on('click', function () {
+    musicPlayer.prev();
+  });
+
+  $('#musicNextBtn').on('click', function () {
+    musicPlayer.next();
+  });
+
+  // Notch tab volume slider
+  $(document).on('input', '#notchGainSlider', function () {
+    $('#notchGainDisplay').text(this.value);
+    if (find.gainNode) {
+      find.gainNode.gain.value = this.value / 100;
     }
   });
 
