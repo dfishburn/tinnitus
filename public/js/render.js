@@ -10,7 +10,7 @@ var ctx = document.querySelector('canvas').getContext('2d');
 var slider = document.querySelector('input[type=range]');
 var body = $('.container:first');
 var width = body.width();
-var height = width * 0.5;
+var height = width * 0.25;
 var running = false;
 
 function start() {
@@ -31,7 +31,7 @@ function stop() {
 function setup() {
   $(window).on('resize', function () {
     width = body.width();
-    height = width * 0.5;
+    height = width * 0.25;
     slider.style.width = width + 'px';
     if (running) {
       start();

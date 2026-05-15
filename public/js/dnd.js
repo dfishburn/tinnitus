@@ -22,7 +22,7 @@ root.ondrop = function (e) {
         notch.input = music;
       }
 
-      music.noteOn(0);
+      music.start(0);
     }, function () {
       console.error('failed to decodeAudioData');
     });

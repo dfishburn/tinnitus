@@ -4,37 +4,53 @@
 var audio,
     notch;
 
-function init() {
-  var playing = false,
-      touch = 'createTouch' in document;
-
+function initAudio() {
+  if (audio) {
+    // Resume if suspended (required by modern browsers after user gesture)
+    if (audio.state === 'suspended') {
+      audio.resume();
+    }
+    return;
+  }
   try {
-    audio = new window.webkitAudioContext();
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    audio = new AudioContext();
   } catch(e) {
     alert('Web Audio API is not supported in this browser');
   }
+}
 
-  $(function () {
-    $('#nav a:first').tab('show');
+function init() {
+  var touch = 'createTouch' in document;
+
+  $('#startBtn').on('click', function () {
+    initAudio();
+    $(this).prop('disabled', true);
+    $('#stopBtn').prop('disabled', false);
+    find.setup(true);
+  });
+
+  $('#stopBtn').on('click', function () {
+    if (audio) {
+      audio.suspend();
+    }
+    $(this).prop('disabled', true);
+    $('#startBtn').text('Resume').prop('disabled', false);
   });
 
   $(document).on('audioready', function () {
     $('#mute').on('click', function () {
-      if (playing) {
-        find.analyser.output = null;
-      } else {
-        find.analyser.output = audio.destination;
-      }
-      playing = !playing;
+      if (!find.gainNode) { return; }
+      var muted = $(this).hasClass('active');
+      find.gainNode.gain.value = muted ? 0 : (document.querySelector('#gainSlider').value / 100);
+      $(this)
+        .toggleClass('btn-secondary', !muted)
+        .toggleClass('btn-warning', muted);
     });
   });
 
-
-  $('a[data-toggle="tab"]').on('shown', function (e) {
-    //e.target // activated tab
-    //e.relatedTarget // previous tab
-    var show = e.target.hash.substr(1),
-        hidden = (e.relatedTarget || { hash: "" }).hash.substr(1);
+  $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var show = e.target.hash.substr(1);
     if (show === 'find') {
       find.start();
     } else {
@@ -52,15 +68,6 @@ function init() {
   setTimeout(function () {
     window.scrollTo(0, 1);
   }, 1000);
-
-  if (touch) {
-    $(document).one('touchstart', function () {
-      find.setup(true);
-    });
-  } else {
-    find.setup(true);
-  }
-
 }
 
 window.addEventListener('load', init, false);

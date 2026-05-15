@@ -1,34 +1,39 @@
 (function () {
 "use strict";
 
-if (!window.webkitAudioContext) { return; }
+if (!window.AudioContext && !window.webkitAudioContext) { return; }
 
-var filter = new window.webkitAudioContext().createBiquadFilter();
-var AudioNode = filter.__proto__.__proto__; // "__proto__ is deprecated" - bite me, this works!
+var AudioNode = window.AudioNode;
+
+if (!AudioNode) { return; }
 
 function toString(node) {
   return (node || 'null').toString().replace(/\[object (.*)\]/, '$1');
 }
 
-AudioNode.__defineGetter__('input', function() {
-  return this._input;
+Object.defineProperty(AudioNode.prototype, 'input', {
+  get: function() {
+    return this._input;
+  },
+  set: function(node) {
+    console.log(toString(node), '->', toString(this));
+    if (this._input) { this._input.disconnect(); }
+    if (node) { node.connect(this); }
+    this._input = node;
+  },
+  configurable: true
 });
 
-AudioNode.__defineSetter__('input', function(node) {
-  console.log(toString(node), '->', toString(this));
-  if (this._input) { this._input.disconnect(); }
-  if (node) { node.connect(this); }
-  this._input = node;
-});
-
-AudioNode.__defineGetter__('output', function() {
-  return this._output;
-});
-
-AudioNode.__defineSetter__('output', function(node) {
-  if (node) { node.input = this; }
-  else { this._output.input = null; }
-  this._output = node;
+Object.defineProperty(AudioNode.prototype, 'output', {
+  get: function() {
+    return this._output;
+  },
+  set: function(node) {
+    if (node) { node.input = this; }
+    else if (this._output) { this._output.input = null; }
+    this._output = node;
+  },
+  configurable: true
 });
 
 })();

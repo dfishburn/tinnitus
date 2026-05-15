@@ -13,12 +13,6 @@ function generateWhiteNoise(stereo, bufSize){
   return node;
 }
 
-function whiteNoise() {
-  var noise = whiteNoise();
-  noise.connect(analyser);
-  noise.connect(rawanalyser);
-}
-
 function centreFreq(f) {
   var lower = f / 1.41;
   var upper = lower * 2;
@@ -27,7 +21,7 @@ function centreFreq(f) {
 
 function singleNotch(value) {
   var notch = audio.createBiquadFilter();
-  notch.type = notch.NOTCH;
+  notch.type = 'notch';
   notch.frequency.value = centreFreq(value);
   notch.Q.value = 1;
   notch.gain.value = 0;
@@ -58,46 +52,37 @@ function Notch(value, n) {
   return this;
 }
 
-Notch.prototype.__defineGetter__('input', function() {
-  return this.notches[0].input;
+Object.defineProperty(Notch.prototype, 'input', {
+  get: function() { return this.notches[0].input; },
+  set: function(node) { this.notches[0].input = node; }
 });
 
-Notch.prototype.__defineSetter__('input', function(node) {
-  this.notches[0].input = node;
+Object.defineProperty(Notch.prototype, 'output', {
+  get: function() { return this.notches[this.notches.length - 1].output; },
+  set: function(node) { this.notches[this.notches.length - 1].output = node; }
 });
 
-Notch.prototype.__defineGetter__('output', function() {
-  return this.notches[this.notches.length - 1].output;
-});
-
-Notch.prototype.__defineSetter__('output', function(node) {
-  this.notches[this.notches.length - 1].output = node;
-});
-
-Notch.prototype.__defineGetter__('value', function() {
-  return this._value;
-});
-
-Notch.prototype.__defineSetter__('value', function(value) {
-  // loop through all notches and set the value
-  var i = this.notches.length;
-  while (i--) {
-    this.notches[i].frequency.value = centreFreq(value);
+Object.defineProperty(Notch.prototype, 'value', {
+  get: function() { return this._value; },
+  set: function(value) {
+    var i = this.notches.length;
+    while (i--) {
+      this.notches[i].frequency.value = centreFreq(value);
+    }
+    this._value = value;
   }
-  this._value = value;
 });
 
 Notch.prototype.allpass = function() {
   var i = this.notches.length;
   while (i--) {
-    this.notches[i].type = this.notches[i].ALLPASS;
+    this.notches[i].type = 'allpass';
   }
 };
 
 Notch.prototype.notch = function() {
   var i = this.notches.length;
   while (i--) {
-    this.notches[i].type = this.notches[i].NOTCH;
+    this.notches[i].type = 'notch';
   }
 };
-

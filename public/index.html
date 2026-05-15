@@ -1,37 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Notched Audio Generator</title>
-    <!-- Bootstrap -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet" media="screen">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container">
-      <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-          <div class="container">
-            <a class="brand" href="#">Notched Music for Tinitus</a>
-            <ul id="nav" class="nav">
-              <li><a data-toggle="tab" href="#find">Find</a></li>
-              <li><a data-toggle="tab" href="#notch">Notch</a></li>
-            </ul>
-            <ul class="pull-right nav">
-              <li><button id="mute" class="btn active" data-toggle="button"><i class="icon-volume-off"></i> Mute</button></li>
-            </ul>
-          </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">Notched Music for Tinnitus</a>
+        <div class="collapse navbar-collapse">
+          <ul id="nav" class="nav nav-tabs ms-3">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#find">Find</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notch">Notch</a></li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <div class="btn-group">
+              <button id="startBtn" class="btn btn-success">Start</button>
+              <button id="mute" class="btn btn-secondary" data-bs-toggle="button">Mute</button>
+              <button id="stopBtn" class="btn btn-danger" disabled>Stop</button>
+            </div>
+          </ul>
         </div>
       </div>
-      <div class="container">
-        <canvas id="frequency"></canvas>
-        <input type="range" min="0" max="20000">
-        <h1>Frequency: <span id="freq">440</span>hz</h1>
-      </div>
+    </nav>
+
+    <div class="container mt-5 pt-3">
+      <canvas id="frequency"></canvas>
+      <label class="form-label mt-2">Frequency: <span id="freq">440</span> Hz</label>
+      <input id="freqSlider" type="range" min="0" max="20000" class="form-range">
+      <label class="form-label mt-2">Gain: <span id="gainDisplay">50</span>%</label>
+      <input id="gainSlider" type="range" min="0" max="100" value="50" class="form-range">
     </div>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+
+    <!-- jQuery 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <!-- Bootstrap 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/raf.js"></script>
     <script src="js/dnd.js"></script>
     <script src="js/audio-node.js"></script>
