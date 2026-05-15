@@ -21,3 +21,58 @@ However, I do intend to flesh out the server side so the app can **freely provid
 - Export (as a zip or individual files) of notched mp3 files (also requires trip to server)
 
 *More details to come as I continue to develop this.*
+
+
+The Application
+===============
+
+Find Tab
+
+Use the Find tab to determine your tinnitus frequency.
+Use the Gain to and your computers volume to set the sound so that it is just below your own tinnitus volume.
+Play with the frequency until the sounds more of less cancel out each other.
+Now you have your tinnitus frequency.
+
+Notch Tab
+
+The Notch tab will play White Noise, but it will notch around your tinnitus frequency.
+
+Tailor-Made Notched Music Training (TMNMT):
+
+    The "tailor-made" part refers to the fact that the notch is customised to
+    each individual's specific tinnitus frequency — unlike generic broadband
+    noise therapies, the notch is tuned precisely to the frequency the patient
+    perceives their tinnitus at. That's exactly what the "Find" tab is for.
+
+Based on the research behind Notched Music Training (TMNMT):
+
+    The mechanism: The auditory cortex uses lateral inhibition — neurons tuned
+    to one frequency actively suppress activity in neighbouring neurons. When
+    you repeatedly stimulate the frequencies around your tinnitus frequency but
+    not the tinnitus frequency itself, the lateral inhibition from those
+    surrounding frequencies suppresses the over-active neurons responsible for
+    generating the tinnitus perception.
+
+What the therapy does:
+
+    - You listen to audio (music or noise) with a notch cut out at your
+      tinnitus frequency
+    - The frequencies on either side of the notch are present and stimulate
+      neurons neighbouring your tinnitus frequency 
+    - Those neighbouring neurons fire and laterally inhibit the
+      tinnitus-frequency neurons
+    - Over weeks/months of regular listening, the tinnitus-frequency neurons
+      become less excitable The perceived loudness and intrusiveness of the
+      tinnitus decreases
+
+What it does NOT do:
+    - It does not cure tinnitus
+    - It does not work on the ear itself — it works on the brain's auditory
+      cortex
+    - Results are gradual — studies showed modest but statistically significant
+      reductions after 3-12 months of daily listening
+
+The notch width matters: The notch should be about one octave wide centred on
+the tinnitus frequency — half an octave below and half an octave above. That is
+what centreFreq() is approximating with the / 1.41 (which is √2, i.e. half an
+octave down).
