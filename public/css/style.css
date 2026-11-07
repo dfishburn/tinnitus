@@ -21,6 +21,11 @@ input[type=range]::-webkit-slider-thumb {
   background-position: 50%;
 }
 
+/* Tab strip: inactive tabs readable on dark background, active tab uses Bootstrap default (white bg, dark text) */
+#nav .nav-link:not(.active) {
+  color: #dee2e6;
+}
+
 /* Prevent text selection on button double-click */
 button {
   user-select: none;
