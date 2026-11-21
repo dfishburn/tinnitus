@@ -33,6 +33,17 @@ Use the Gain to and your computers volume to set the sound so that it is just be
 Play with the frequency until the sounds more of less cancel out each other.
 Now you have your tinnitus frequency.
 
+Use **Width** to match a sound that spans a range of pitches rather than a single
+tone. The slider sets the total frequency span in Hz around the selected
+frequency (for example, 1000 Hz with a width of 400 Hz spans 800–1200 Hz).
+Nearby tones are blended with more weight at the centre and less at the edges.
+A width of 0 Hz keeps the original single oscillator. Width works with all four
+wave types; square, sawtooth and triangle waves also contain harmonics above
+that range. The range is clipped at 0 Hz and the browser's maximum frequency.
+The blend is normalized to avoid multiplying peak volume, though perceived
+loudness can change. Start with low gain and a comfortable listening volume.
+This control only affects the Find sound, not the Notch equalizer.
+
 Notch Tab
 
 The Notch tab will play White Noise, but it will notch around your tinnitus frequency.

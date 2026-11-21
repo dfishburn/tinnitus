@@ -76,6 +76,7 @@ function startNotchNoise() {
 
 function init() {
   equalizer.buildUI();
+  find.setup(false);
 
   // Find tab — play/pause button
   $('#startBtn').on('click', function () {
@@ -83,14 +84,13 @@ function init() {
 
     if (!audio._setupDone) {
       equalizer.buildFilters();
-      find.setup(true);
       audio._setupDone = true;
     }
 
     if (!findPlaying) {
       // Start/resume
       audio.resume();
-      find.resume();
+      find.start();
       findPlaying = true;
       $(this).html('<i class="bi bi-pause-fill"></i>');
     } else {

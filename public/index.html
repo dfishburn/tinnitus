@@ -50,8 +50,11 @@
             </div>
           </div>
           <canvas id="frequency"></canvas>
-          <label class="form-label mt-2">Frequency: <span id="freq">440</span> Hz</label>
-          <input id="freqSlider" type="range" min="0" max="20000" class="form-range">
+          <label for="freqSlider" class="form-label mt-2">Frequency: <span id="freq">440</span> Hz</label>
+          <input id="freqSlider" type="range" min="0" max="22000" value="440" class="form-range">
+          <label for="widthSlider" class="form-label mt-2">Width: <span id="widthDisplay">0</span> Hz</label>
+          <input id="widthSlider" type="range" min="0" max="4000" step="10" value="0" class="form-range" aria-describedby="widthHelp">
+          <div id="widthHelp" class="text-muted small">0 Hz keeps a single pitch. Increase to blend nearby pitches around the selected frequency. <span id="widthRange"></span></div>
           <label class="form-label mt-2">Gain: <span id="gainDisplay">50</span>%</label>
           <input id="gainSlider" type="range" min="0" max="100" value="50" class="form-range">
         </div>
