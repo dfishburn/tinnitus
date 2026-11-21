@@ -73,22 +73,42 @@
           </div>
 
           <!-- Noise controls -->
-          <div id="noiseControls" class="d-flex align-items-end gap-3 mb-3">
-            <div>
-              <label for="noiseType" class="form-label">Noise Type</label>
-              <select id="noiseType" class="form-select w-auto">
-                <option value="white" selected>White</option>
-                <option value="pink">Pink</option>
-                <option value="brown">Brown</option>
-                <option value="blue">Blue</option>
-                <option value="violet">Violet</option>
-              </select>
+          <div id="noiseControls" class="mb-3">
+            <div class="d-flex align-items-end gap-3 mb-3">
+              <div>
+                <label for="noiseType" class="form-label">Noise Type</label>
+                <select id="noiseType" class="form-select w-auto">
+                  <option value="white" selected>White</option>
+                  <option value="pink">Pink</option>
+                  <option value="brown">Brown</option>
+                  <option value="blue">Blue</option>
+                  <option value="violet">Violet</option>
+                </select>
+              </div>
+              <div>
+                <button id="notchPlayBtn" type="button" class="btn btn-success" disabled>
+                  <i class="bi bi-play-fill"></i>
+                </button>
+              </div>
             </div>
-            <div>
-              <button id="notchPlayBtn" type="button" class="btn btn-success" disabled>
-                <i class="bi bi-play-fill"></i>
-              </button>
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" id="noiseBandEnabled">
+              <label class="form-check-label" for="noiseBandEnabled">Focus noise into a frequency band (off = full spectrum)</label>
             </div>
+            <label for="noiseFreqSlider" class="form-label">Centre frequency: <span id="noiseFreqDisplay">8000</span> Hz</label>
+            <input id="noiseFreqSlider" type="range" min="20" max="22000" step="10" value="8000" class="form-range" aria-describedby="noiseBandHelp" disabled>
+            <label for="noiseWidthSlider" class="form-label mt-2">Width: <span id="noiseWidthDisplay">2000</span> Hz</label>
+            <input id="noiseWidthSlider" type="range" min="20" max="20000" step="10" value="2000" class="form-range" aria-describedby="noiseBandHelp" disabled>
+            <div id="noiseBandHelp" class="text-muted small mb-3">Move the centre to change the pitch-like quality of the noise; narrow the width for a more focused sound. <span id="noiseBandRange">Full spectrum.</span> Filtering can make noise quieter; keep the volume comfortable.</div>
+            <div class="d-flex align-items-center flex-wrap gap-3 mb-2">
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="noiseMatchMode">
+                <label class="form-check-label" for="noiseMatchMode">Match mode (bypass notch/EQ)</label>
+              </div>
+              <button id="notchNoiseFrequency" type="button" class="btn btn-sm btn-outline-primary" disabled>Notch this frequency</button>
+            </div>
+            <div id="noiseMatchStatus" class="text-muted small" aria-live="polite">Notch/EQ applied. Enable Match mode to find your frequency without cutting it out.</div>
+            <div class="text-muted small mt-1">Once matched, click Notch this frequency to set the automatic EQ. Widen the band or turn band focus off if the notch removes most of the sound.</div>
           </div>
 
           <!-- Music controls -->
@@ -157,10 +177,11 @@
     <script src="js/dnd.js"></script>
     <script src="js/audio-node.js"></script>
     <script src="js/generate.js"></script>
+    <script src="js/noise-band.js?v=1"></script>
     <script src="js/render.js"></script>
-    <script src="js/equalizer.js"></script>
+    <script src="js/equalizer.js?v=2"></script>
     <script src="js/music.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=2"></script>
     <script src="js/find.js"></script>
   </body>
 </html>

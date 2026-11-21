@@ -48,6 +48,33 @@ Notch Tab
 
 The Notch tab will play White Noise, but it will notch around your tinnitus frequency.
 
+### Matching with noise
+
+The Noise source now has an optional **Focus noise into a frequency band** switch.
+Off preserves the original full-spectrum noise. On enables **Centre frequency**
+(20 Hz up to the browser's supported limit, at most 22 kHz) and **Width**
+(20–20,000 Hz, also limited by the sample rate). These shape any of the five
+noise colours with a bandpass filter, rather than shifting all frequencies.
+The displayed range is the filter's approximate −3 dB band, not a hard cutoff.
+Its edges need not be exactly symmetric in Hz around the centre.
+
+To match first and notch afterward:
+
+1. Select Noise and enable band focus and **Match mode**. Match mode bypasses
+   the notch/EQ for noise only, without changing your EQ slider settings.
+2. Play at a comfortable, low volume. Adjust the centre and width to find the
+   closest sound. Narrower noise sounds more pitch-like and may be quieter;
+   the app does not automatically boost it. Headphones and hearing still limit
+   which frequencies you can hear.
+3. Click **Notch this frequency**. This copies the centre to the Find frequency,
+   switches the equalizer to automatic, and leaves Match mode so the EQ is applied.
+   The existing ten-band EQ approximates the notch; it is not a precision filter
+   at every possible frequency.
+4. Widen the band or turn band focus off for broader notched noise. A narrow
+   band centred inside the notch may become nearly silent.
+
+Frequency/width filtering and Match mode do not affect the Music source.
+
 Tailor-Made Notched Music Training (TMNMT):
 
     The "tailor-made" part refers to the fact that the notch is customised to

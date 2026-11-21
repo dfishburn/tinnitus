@@ -1,10 +1,13 @@
-/*global find:true, $:true, generateNoise:true, equalizer:true, musicPlayer:true*/
+/*global find:true, $:true, generateNoise:true, noiseBand:true, equalizer:true, musicPlayer:true*/
 "use strict";
 
 var audio;
 var notchPlaying = false;
 var notchNoiseNode = null;
 var notchKeeperNode = null;
+var notchNoiseBand = null;
+var notchMatchGain = null;
+var notchEQGain = null;
 var findPlaying = false;
 
 function initAudio() {
@@ -15,6 +18,7 @@ function initAudio() {
     // New AudioContext starts in running state — suspend immediately
     // so user controls when sound starts
     audio.suspend();
+    updateNoiseControls();
   } catch(e) {
     alert('Web Audio API is not supported in this browser');
   }
@@ -22,6 +26,39 @@ function initAudio() {
 }
 
 // --- Notch noise helpers ---
+
+function updateNoiseControls(immediate) {
+  var frequency = document.querySelector('#noiseFreqSlider');
+  var width = document.querySelector('#noiseWidthSlider');
+  var enabled = document.querySelector('#noiseBandEnabled').checked;
+  var sampleRate = audio ? audio.sampleRate : 48000;
+  frequency.max = Math.floor(Math.min(22000, sampleRate / 2 - 20) / 10) * 10;
+  width.max = Math.floor(Math.min(20000, sampleRate / 2 - 20) / 10) * 10;
+  var band = noiseBand.settings(sampleRate, Number(frequency.value), Number(width.value));
+  frequency.disabled = !enabled;
+  width.disabled = !enabled;
+  $('#notchNoiseFrequency').prop('disabled', !enabled);
+  $('#noiseFreqDisplay').text(band.frequency);
+  $('#noiseWidthDisplay').text(band.width);
+  $('#noiseBandRange').text(enabled ? 'Approximate −3 dB band: ' + Math.round(band.low) + '–' + Math.round(band.high) + ' Hz (soft edges).' : 'Full spectrum.');
+  if (notchNoiseBand) {
+    notchNoiseBand.update(enabled, band.frequency, band.width, immediate === true);
+  }
+}
+
+function updateNoiseMatchMode(immediate) {
+  var matching = document.querySelector('#noiseMatchMode').checked;
+  $('#noiseMatchStatus').text(matching ? 'Matching: notch/EQ bypassed for noise only.' : 'Notch/EQ applied. Enable Match mode to find your frequency without cutting it out.');
+  if (notchMatchGain && notchEQGain) {
+    if (immediate === true) {
+      notchMatchGain.gain.value = matching ? 1 : 0;
+      notchEQGain.gain.value = matching ? 0 : 1;
+    } else {
+      notchMatchGain.gain.setTargetAtTime(matching ? 1 : 0, audio.currentTime, 0.02);
+      notchEQGain.gain.setTargetAtTime(matching ? 0 : 1, audio.currentTime, 0.02);
+    }
+  }
+}
 
 function stopNotchNoise() {
   if (notchNoiseNode) {
@@ -33,8 +70,14 @@ function stopNotchNoise() {
     notchKeeperNode = null;
   }
   if (equalizer.filtersBuilt() && find.gainNode) {
+    if (notchEQGain) {
+      try { equalizer.getOutput().disconnect(notchEQGain); } catch(e) {}
+    }
     try { equalizer.getOutput().disconnect(find.gainNode); } catch(e) {}
   }
+  if (notchNoiseBand) { notchNoiseBand.disconnect(); notchNoiseBand = null; }
+  if (notchMatchGain) { notchMatchGain.disconnect(); notchMatchGain = null; }
+  if (notchEQGain) { notchEQGain.disconnect(); notchEQGain = null; }
   notchPlaying = false;
   $('#notchPlayBtn').html('<i class="bi bi-play-fill"></i>');
 }
@@ -59,8 +102,18 @@ function startNotchNoise() {
   }
 
   notchNoiseNode = generateNoise(noiseType);
-  notchNoiseNode.connect(equalizer.getInput());
-  equalizer.getOutput().connect(find.gainNode);
+  notchNoiseBand = noiseBand.create(audio);
+  notchNoiseNode.connect(notchNoiseBand.input);
+  notchNoiseBand.output.connect(equalizer.getInput());
+  notchMatchGain = audio.createGain();
+  notchEQGain = audio.createGain();
+  notchNoiseBand.output.connect(notchMatchGain);
+  equalizer.getOutput().connect(notchEQGain);
+  notchMatchGain.connect(find.gainNode);
+  notchEQGain.connect(find.gainNode);
+  updateNoiseControls(true);
+  updateNoiseMatchMode(true);
+  find.gainNode.gain.value = Number(document.querySelector('#notchGainSlider').value) / 100;
 
   notchKeeperNode = audio.createGain();
   notchKeeperNode.gain.value = 0;
@@ -77,13 +130,28 @@ function startNotchNoise() {
 function init() {
   equalizer.buildUI();
   find.setup(false);
+  updateNoiseControls();
+  updateNoiseMatchMode();
+
+  $('#noiseBandEnabled').on('change', updateNoiseControls);
+  $('#noiseFreqSlider, #noiseWidthSlider').on('input', updateNoiseControls);
+  $('#noiseMatchMode').on('change', updateNoiseMatchMode);
+  $('#notchNoiseFrequency').on('click', function () {
+    if (!document.querySelector('#noiseBandEnabled').checked) { return; }
+    var frequency = document.querySelector('#freqSlider');
+    frequency.value = document.querySelector('#noiseFreqSlider').value;
+    equalizer.setManual(false);
+    frequency.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#noiseMatchMode').checked = false;
+    updateNoiseMatchMode();
+  });
 
   // Find tab — play/pause button
   $('#startBtn').on('click', function () {
     if (!initAudio()) { return; }
 
     if (!audio._setupDone) {
-      equalizer.buildFilters();
+      if (!equalizer.filtersBuilt()) { equalizer.buildFilters(); }
       audio._setupDone = true;
     }
 

@@ -9,15 +9,17 @@ var MIN_DB = -24;
 var MAX_DB = 0;
 var filters = [];
 var manual = false;
+var notchFrequency = 440;
+var currentGains = BANDS.map(function () { return 0; });
 
 // Build the EQ filter chain using peaking filters
 function buildFilters() {
-  filters = BANDS.map(function (freq) {
+  filters = BANDS.map(function (freq, i) {
     var f = audio.createBiquadFilter();
     f.type = 'peaking';
     f.frequency.value = freq;
     f.Q.value = 1.4;
-    f.gain.value = 0;
+    f.gain.value = currentGains[i];
     return f;
   });
 
@@ -52,6 +54,7 @@ function calcNotchGains(tinnitusFreq) {
 
 // Set filter gains from an array and update the UI sliders
 function applyGains(gains) {
+  currentGains = gains.slice();
   gains.forEach(function (db, i) {
     if (filters[i]) {
       filters[i].gain.value = db;
@@ -61,6 +64,23 @@ function applyGains(gains) {
     if (slider) { slider.value = db; }
     if (label)  { label.textContent = Math.round(db) + 'dB'; }
   });
+}
+
+function setNotch(tinnitusFreq) {
+  notchFrequency = tinnitusFreq;
+  var gains = tinnitusFreq > 0 ? calcNotchGains(tinnitusFreq) : BANDS.map(function () { return 0; });
+  applyGains(gains);
+}
+
+function setManual(enabled) {
+  manual = enabled;
+  var checkbox = document.querySelector('#eqManual');
+  if (checkbox) { checkbox.checked = enabled; }
+  BANDS.forEach(function (freq, i) {
+    var slider = document.querySelector('#eq-band-' + i);
+    if (slider) { slider.disabled = !enabled; }
+  });
+  if (!enabled) { setNotch(notchFrequency); }
 }
 
 // Build the slider UI inside #eq-container
@@ -95,6 +115,7 @@ function buildUI() {
       slider.addEventListener('input', function () {
         if (!manual) { return; }
         var db = parseFloat(this.value);
+        currentGains[i] = db;
         if (filters[i]) { filters[i].gain.value = db; }
         if (label) { label.textContent = Math.round(db) + 'dB'; }
       });
@@ -105,11 +126,7 @@ function buildUI() {
   var checkbox = document.querySelector('#eqManual');
   if (checkbox) {
     checkbox.addEventListener('change', function () {
-      manual = this.checked;
-      BANDS.forEach(function (freq, i) {
-        var slider = document.querySelector('#eq-band-' + i);
-        if (slider) { slider.disabled = !manual; }
-      });
+      setManual(this.checked);
     });
   }
 }
@@ -127,10 +144,8 @@ return {
   },
   getInput:  getInput,
   getOutput: getOutput,
-  setNotch: function (tinnitusFreq) {
-    var gains = tinnitusFreq > 0 ? calcNotchGains(tinnitusFreq) : BANDS.map(function () { return 0; });
-    applyGains(gains);
-  },
+  setNotch: setNotch,
+  setManual: setManual,
   isManual: function () { return manual; }
 };
 
